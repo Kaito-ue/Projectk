@@ -3,12 +3,14 @@
 // まずは必要なモジュールを読み込んでいます。今回はProductとCompanyの情報と、リクエストの情報が必要です。
 namespace App\Http\Controllers;
 
+
 use App\Models\Product; // Productモデルを現在のファイルで使用できるようにするための宣言です。
 use App\Models\Company; // Companyモデルを現在のファイルで使用できるようにするための宣言です。
 use Illuminate\Http\Request; // Requestクラスという機能を使えるように宣言します
 // Requestクラスはブラウザに表示させるフォームから送信されたデータをコントローラのメソッドで引数として受け取ることができます。
 
-class ProductController extends Controller //コントローラークラスを継承します（コントローラーの機能が使えるようになります）
+class ProductController extends Controller
+//コントローラークラスを継承します（コントローラーの機能が使えるようになります）
 {
     
     public function index()

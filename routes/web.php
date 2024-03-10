@@ -1,25 +1,15 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+// "Route"というツールを使うために必要な部品を取り込んでいます。
 use App\Http\Controllers\ProductController;
-
+// ProductControllerに繋げるために取り込んでいます
 use Illuminate\Support\Facades\Auth;
-
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
+// "Auth"という部品を使うために取り込んでいます。この部品はユーザー認証（ログイン）に関する処理を行います
+use App\Http\Controllers\Auth\LoginController;
 
 Route::get('/', function () {
-   
+    // ウェブサイトのホームページ（'/'のURL）にアクセスした場合のルートです
     if (Auth::check()) {
         // ログイン状態ならば
         return redirect()->route('products.index');
@@ -43,6 +33,14 @@ Auth::routes();
 // ルートが作成されます。
 //　つまりログイン画面に用意されたビューのリンク先がこの1行で済みます
 
+Route::post('/login', [LoginController::class, 'login']);
+
 Route::group(['middleware' => 'auth'], function () {
     Route::resource('products', ProductController::class);
 });
+
+
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
