@@ -24,6 +24,7 @@ Route::get('/', function () {
 // もしCompanyControllerだった場合は
 // companies.index のように、英語の正しい複数形になります。
 
+Route::get('/products', 'ProductController@index')->name('products.index');
 
 Auth::routes();
 
@@ -44,3 +45,7 @@ Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
+// web.php ファイル内
+
+Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+Route::post('/products', [ProductController::class, 'store'])->name('products.store');

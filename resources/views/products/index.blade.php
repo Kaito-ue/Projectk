@@ -5,44 +5,25 @@
     <h1 class="mb-4">商品情報一覧</h1>
 
     <a href="{{ route('products.create') }}" class="btn btn-primary mb-3">商品新規登録</a>
+    <form action="{{ route('products.index') }}" method="GET">
+    <input type="text" name="search" placeholder="検索キーワード">
+    <select name="manufacturer">
+        <option value="">メーカー名</option>
+        <option value="1">Coca-Cola</option>
+        <option value="2">サントリー</option>
+        <!-- 他のカテゴリーも必要に応じて追加 -->
+    </select>
+    <button type="submit">検索</button>
+</form>
 
-<!-- 検索フォームのセクション -->
-<div class="search mt-5">
-    
    
-    
-    <!-- 検索フォーム。GETメソッドで、商品一覧のルートにデータを送信 -->
-    <form action="{{ route('products.index') }}" method="GET" class="row g-3">
-
-        <!-- 商品名検索用の入力欄 -->
-        <div class="col-sm-12 col-md-3">
-            <input type="text" name="search" class="form-control" placeholder="検索キーワード" value="{{ request('search') }}">
-        </div>
-
-        <!-- 最小価格の入力欄 -->
-        <div class="col-sm-12 col-md-2">
-            <input type="Manufacture name" name="search" class="form-control" placeholder="メーカー名" value="{{ request('search') }}">
-        </div>
-
-        <!-- 絞り込みボタン -->
-        <div class="col-sm-12 col-md-1">
-            <button class="btn btn-outline-secondary" type="submit">検索</button>
-        </div>
-    </form>
-</div>
-
-<!-- 検索条件をリセットするためのリンクボタン -->
-<a href="{{ route('products.index') }}" class="btn btn-success mt-3">検索条件を元に戻す</a>
-
-
-
-
 
     <div class="products mt-5">
         <h2>商品情報</h2>
         <table class="table table-striped">
             <thead>
                 <tr>
+                    <th>ID</th>
                     <th>商品名</th>
                     <th>メーカー</th>
                     <th>価格</th>
@@ -53,8 +34,10 @@
                 </tr>
             </thead>
             <tbody>
+                
             @foreach ($products as $product)
                 <tr>
+                    <td>{{ $product->id }}</td>
                     <td>{{ $product->product_name }}</td>
                     <td>{{ $product->company->company_name }}</td>
                     <td>{{ $product->price }}</td>
@@ -77,8 +60,16 @@
         </table>
     </div>
 
-    {{ $products->links() }}
+    {{ $products->onEachSide(1)->links() }}
 
 </div>
 @endsection
+
+<!-- products/index.blade.php ファイル内 -->
+
+@if(session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
 

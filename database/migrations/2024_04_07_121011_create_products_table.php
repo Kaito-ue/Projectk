@@ -15,8 +15,8 @@ class CreateProductsTable extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id(); // bigint(20) の ID
-            $table->BigInteger('company_id');
-            $table->string('product_name', 255);
+            $table->integer('company_id')->default(0)->nullable();
+            $table->string('product_name', 255)->default('')->nullable();
             $table->integer('price'); // int(11)
             $table->integer('stock'); // int(11)
             $table->text('comment')->nullable();

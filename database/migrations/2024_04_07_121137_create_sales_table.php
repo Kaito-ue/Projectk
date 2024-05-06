@@ -15,7 +15,7 @@ class CreateSalesTable extends Migration
     {
         Schema::create('sales', function (Blueprint $table) {
             $table->id(); // bigint(20) の ID
-            $table->BigInteger('product_id');
+            $table->Integer('product_id');
             $table->timestamps(); // created_at と updated_at の timestamp
 
            

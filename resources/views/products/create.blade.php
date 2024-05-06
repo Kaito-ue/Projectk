@@ -1,4 +1,19 @@
 @extends('layouts.app')
+<script>
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $('#preview').attr('src', e.target.result);
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    $("#img_path").change(function() {
+        previewImage(this);
+    });
+</script>
 
 @section('content')
 <div class="container">
@@ -8,7 +23,7 @@
 
     <form method="POST" action="{{ route('products.store') }}" enctype="multipart/form-data">
 
-        @csrf
+        @csrf 
 
 
 
@@ -28,28 +43,41 @@
 
         <div class="mb-3">
             <label for="price" class="form-label">価格:</label>
-            <input id="price" type="text" name="price" class="form-control" required>
+            <input id="price" type="number" name="price" class="form-control" required>
         </div>
 
         <div class="mb-3">
             <label for="stock" class="form-label">在庫数:</label>
-            <input id="stock" type="text" name="stock" class="form-control" required>
+            <input id="stock" type="number" name="stock" class="form-control" required>
         </div>
 
         <div class="mb-3">
             <label for="comment" class="form-label">コメント:</label>
-            <textarea id="comment" name="comment" class="form-control" rows="3" required></textarea>
+            <textarea id="comment" name="comment" class="form-control" rows="3" maxlength="100" required></textarea>
         </div>
 
         <div class="mb-3">
             <label for="img_path" class="form-label">商品画像:</label>
-            <input id="img_path" type="file" name="img_path" class="form-control" required>
+            <input id="img_path" type="file" name="img_path" class="form-control"  onchange="previewImage(this);"required>
         </div>
-
+        <img id="preview" src="#" alt="商品画像プレビュー" style="max-width: 200px; max-height: 200px;">
         <button type="submit" class="btn btn-primary">登録</button>
     </form>
 
 
 </div>
 @endsection
+
+@if ($errors->has('price'))
+    <span class="text-danger">{{ $errors->first('price') }}</span>
+@endif
+
+@if ($errors->has('stock'))
+    <span class="text-danger">{{ $errors->first('stock') }}</span>
+@endif
+
+@if ($errors->has('comment'))
+    <span class="text-danger">{{ $errors->first('comment') }}</span>
+@endif
+
 
