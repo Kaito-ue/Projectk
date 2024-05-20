@@ -7,7 +7,7 @@ use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Auth;
 // "Auth"という部品を使うために取り込んでいます。この部品はユーザー認証（ログイン）に関する処理を行います
 use App\Http\Controllers\TeachingmaterialController;
-
+use App\Http\Controllers\SearchController;
 
 Route::get('/', function () {
     // ウェブサイトのホームページ（'/'のURL）にアクセスした場合のルートです
@@ -39,6 +39,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('products', ProductController::class);
 });
 
+Route::get('/products/search', 'ProductsController@search')->name('products.search');
 
 
 Auth::routes();
@@ -49,3 +50,11 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::post('/products', [ProductController::class, 'store'])->name('products.store');
+Route::get('/search', [SearchController::class, 'search'])->name('search');
+// routes/web.php
+use App\Http\Controllers\CompanyController;
+
+Route::get('/companies', [CompanyController::class, 'index']);
+
+Route::get('/product/create', [ProductController::class, 'create'])->name('product.create');
+Route::post('/product/store', [ProductController::class, 'store'])->name('product.store');

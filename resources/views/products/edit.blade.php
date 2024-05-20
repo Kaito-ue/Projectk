@@ -6,7 +6,7 @@
             <div class="col-md-8">
                 <a href="{{ route('products.index') }}" class="btn btn-primary mt-1 mb-3">商品一覧画面に戻る</a>
                 <div class="card">
-                    <div class="card-header"><h2>商品情報を変更する</h2></div>
+                    <div class="card-header"><h2>商品情報編集画面</h2></div>
 
                     <div class="card-body">
                         <form method="POST" action="{{ route('products.update', $product) }}" enctype="multipart/form-data">
@@ -19,7 +19,7 @@
                             </div>
 
                             <div class="mb-3">
-                                <label for="company_id" class="form-label">会社</label>
+                                <label for="company_id" class="form-label">メーカー名</label>
                                 <select class="form-select" id="company_id" name="company_id">
                                     @foreach($companies as $company)
                                         <option value="{{ $company->id }}" {{ $product->company_id == $company->id ? 'selected' : '' }}>{{ $company->company_name }}</option>
@@ -28,13 +28,13 @@
                             </div>
 
                             <div class="mb-3">
-                                <label for="price" class="form-label">金額</label>
-                                <input type="number" class="form-control" id="price" name="price" value="{{ $product->price }}" required>
+                                <label for="price" class="form-label">価格</label>
+                                <input type="text" class="form-control" id="price" name="price" value="{{ $product->price }}" required>
                             </div>
 
                             <div class="mb-3">
                                 <label for="stock" class="form-label">在庫数</label>
-                                <input type="number" class="form-control" id="stock" name="stock" value="{{ $product->stock }}" required>
+                                <input type="text" class="form-control" id="stock" name="stock" value="{{ $product->stock }}" required>
                             </div>
 
                             <div class="mb-3">
@@ -55,5 +55,14 @@
             </div>
         </div>
     </div>
-@endsection
 
+    <script>
+        // 数字以外の入力を防ぐためのバリデーション
+        document.getElementById('price').addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+        document.getElementById('stock').addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+    </script>
+@endsection

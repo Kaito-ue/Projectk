@@ -5,26 +5,26 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Company;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator; // Validatorクラスをインポート
 
 class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::query();
-        $products = Product::paginate(4);
+        $search = $request->input('search');
+        $company_id = $request->input('company_id');
 
-        if ($request->has('search') && !empty($request->search)) {
-            $query->where('product_name', 'like', '%' . $request->search . '%');
-        }
+        $products = Product::query()
+            ->when($search, function ($query, $search) {
+                return $query->where('product_name', 'like', '%' . $search . '%');
+            })
+            ->when($company_id, function ($query, $company_id) {
+                return $query->where('company_id', $company_id);
+            })
+            ->paginate(5);
 
-        if ($request->has('manufacturer') && !empty($request->manufacturer)) {
-            $query->where('company_id', $request->manufacturer);
-        }
+        $companies = Company::all(); // 企業情報を取得
 
-        $products = $query->paginate(10);
-
-        return view('products.index', compact('products'));
+        return view('products.index', compact('products', 'companies'));
     }
 
     public function create()
@@ -33,36 +33,43 @@ class ProductController extends Controller
         return view('products.create', compact('companies'));
     }
 
+    public function search(Request $request)
+    {
+        $keyword = $request->input('keyword');
+    
+        $products = Product::where('product_name', 'like', '%' . $keyword . '%')->paginate(5);
+    
+        return view('products.index', compact('products'))->with('keyword', $keyword);
+    }
+    
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $request->validate([
+            'company_id' => 'required|exists:companies,id',
             'product_name' => 'required|string|max:255',
-            'company_id' => 'required|integer',
-            'price' => 'required|integer',
-            'stock' => 'required|integer',
-            'comment' => 'nullable|string',
-            'img_path' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'price' => 'required',
+            'stock' => 'required',
+            'comment' => 'nullable',
+            'img_path' => 'nullable|image|max:2048',
         ]);
 
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
-
-        $product = new Product();
-        $product->product_name = $request->input('product_name');
-        $product->company_id = $request->input('company_id');
-        $product->price = $request->input('price');
-        $product->stock = $request->input('stock');
-        $product->comment = $request->input('comment');
+        $product = new Product([
+            'product_name' => $request->get('product_name'),
+            'company_id' => $request->get('company_id'),
+            'price' => $request->get('price'),
+            'stock' => $request->get('stock'),
+            'comment' => $request->get('comment'),
+        ]);
 
         if ($request->hasFile('img_path')) {
-            $imagePath = $request->file('img_path')->store('products', 'public');
-            $product->img_path = '/storage/' . $imagePath;
+            $filename = $request->img_path->getClientOriginalName();
+            $filePath = $request->img_path->storeAs('products', $filename, 'public');
+            $product->img_path = '/storage/' . $filePath;
         }
 
         $product->save();
 
-        return redirect()->route('products.index')->with('success', '商品が登録されました。');
+        return redirect()->route('products.create')->with('success', '登録されました。');
     }
 
     public function show(Product $product)
@@ -78,36 +85,30 @@ class ProductController extends Controller
 
     public function update(Request $request, Product $product)
     {
-        $validator = Validator::make($request->all(), [
-            'product_name' => 'required|string|max:255',
-            'price' => 'required|integer',
-            'stock' => 'required|integer',
-            'comment' => 'nullable|string',
-            'img_path' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        $request->validate([
+            'product_name' => 'required',
+            'price' => 'required',
+            'stock' => 'required',
         ]);
 
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
-
-        $product->product_name = $request->input('product_name');
-        $product->price = $request->input('price');
-        $product->stock = $request->input('stock');
-        $product->comment = $request->input('comment');
+        $product->product_name = $request->product_name;
+        $product->price = $request->price;
+        $product->stock = $request->stock;
 
         if ($request->hasFile('img_path')) {
-            $imagePath = $request->file('img_path')->store('products', 'public');
-            $product->img_path = '/storage/' . $imagePath;
+            $filename = $request->img_path->getClientOriginalName();
+            $filePath = $request->img_path->storeAs('products', $filename, 'public');
+            $product->img_path = '/storage/' . $filePath;
         }
 
         $product->save();
 
-        return redirect()->route('products.index')->with('success', '商品が更新されました。');
+        return redirect()->route('products.index')->with('success', '製品が更新されました。');
     }
 
     public function destroy(Product $product)
     {
         $product->delete();
-        return redirect('/products')->with('success', '商品が削除されました。');
+        return redirect()->route('products.index')->with('success', '製品が削除されました。');
     }
 }

@@ -15,10 +15,12 @@ class Product extends Model
     // 以下の情報（属性）を一度に保存したり変更したりできるように設定しています。
     // $fillable を設定しないと、Laravelはセキュリティリスクを避けるために、この一括代入をブロックします。
     protected $fillable = [
-        'title',
-        'image',
+        'product_name',
+        'company_id',
         'price',
-        'description',  
+        'stock',
+        'comment',
+        'img_path', 
     ];
 
     // Productモデルがsalesテーブルとリレーション関係を結ぶためのメソッドです
